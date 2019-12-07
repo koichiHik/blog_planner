@@ -27,8 +27,9 @@ class JacobianCalculator():
         self.__b_traj = b_traj
 
     def calc_jacobian(self, x_0, x_f, v_coeffs, w_coeffs, t_st, t_end, dt):
-        jaco = np.zeros([x_0.shape[0], v_coeffs.shape[0] + w_coeffs.shape[0]])
+        jaco = np.zeros([x_0.shape[0] + x_f.shape[0], v_coeffs.shape[0] + w_coeffs.shape[0]])
         params = np.append(v_coeffs, w_coeffs, axis=0)
+        x_tgt = np.append(x_0, x_f, axis=0)
 
         for i in range(jaco.shape[1]):
             d = np.zeros(jaco.shape[1])
@@ -37,12 +38,14 @@ class JacobianCalculator():
             p_params = params + d
 
             # Numerical Integration
-            x_f_n = self.__b_traj.compute_states(x_0, n_params[0:v_coeffs.shape[0]], n_params[v_coeffs.shape[0]:params.shape[0]], t_st, t_end, dt)[:, -1]
-            x_f_p = self.__b_traj.compute_states(x_0, p_params[0:v_coeffs.shape[0]], p_params[v_coeffs.shape[0]:params.shape[0]], t_st, t_end, dt)[:, -1]
+            states = self.__b_traj.compute_states(x_0, n_params[0:v_coeffs.shape[0]], n_params[v_coeffs.shape[0]:params.shape[0]], t_st, t_end, dt)
+            x_f_n = np.append(states[:, 0], states[:, -1], axis=0)
+            states = self.__b_traj.compute_states(x_0, p_params[0:v_coeffs.shape[0]], p_params[v_coeffs.shape[0]:params.shape[0]], t_st, t_end, dt) 
+            x_f_p = np.append(states[:, 0], states[:, -1], axis=0)
 
             # Differentiation
-            diff_n = x_f - x_f_n
-            diff_p = x_f - x_f_p
+            diff_n = x_tgt - x_f_n
+            diff_p = x_tgt - x_f_p
             jaco[:, i] = (diff_p - diff_n) / (2*self.__ep)
 
         return jaco
