@@ -18,8 +18,8 @@ if __name__ == "__main__":
     dt = 0.01
     x_init = np.array([0, 0, 0, 0, 0])
     x_final = np.array([7, 5, 0, 0, 0])
-    init_v_coeffs = np.zeros(4)
-    init_w_coeffs = np.zeros(4)
+    init_v_coeffs = np.zeros(3)
+    init_w_coeffs = np.zeros(3)
     params = np.append(init_v_coeffs, init_w_coeffs)
 
     b_traj = BicycleModelTrajGenerator(wheel_base)
@@ -66,6 +66,9 @@ if __name__ == "__main__":
     pose.plot(x_tf[0,:], x_tf[1,:], label="Final Result")
     vel.plot(np.arange(t_st, t_end + dt, dt), x_tf[3,:])
     angle.plot(np.arange(t_st, t_end + dt, dt), x_tf[4, :])
+
+    print("Error  : " + str(np.append(x_init, x_final, axis=0) 
+        - np.append(x_tf[:,0], x_tf[:,-1], axis=0)))
 
     pose.legend()
     plt.show()
