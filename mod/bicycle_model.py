@@ -51,9 +51,10 @@ class JacobianCalculator():
             diff_n = x_tgt - x_f_n
             diff_p = x_tgt - x_f_p
             diff = diff_p - diff_n
+
             diff[2] = pi_2_npi(diff[2])
-            diff[7] = pi_2_npi(diff[7])
             diff[4] = pi_2_npi(diff[4])
+            diff[7] = pi_2_npi(diff[7])
             diff[9] = pi_2_npi(diff[9])
 
             jaco[:, i] = diff / (2*self.__ep)
@@ -97,6 +98,8 @@ class BicycleModelTrajGenerator:
         v_prof = PolynomialCalculator(v_coeffs).calc(t_vec)
         w_prof = PolynomialCalculator(w_coeffs).calc(t_vec)
         
+        print(w_prof / math.pi * 180)
+
         states_prof = self.compute_pose_prof(x_0, v_prof, w_prof, t_vec, dt)
         
         return np.append(np.append(states_prof, np.array([v_prof]), axis=0), np.array([w_prof]), axis=0)
@@ -117,19 +120,21 @@ class BicycleModelTrajGenerator:
 
         pose[0, 0] = x_0[0]
         pose[1, 0] = x_0[1]
-        pose[2, 0] = x_0[2]
+        pose[2, 0] = pi_2_npi(x_0[2])
 
         for i in range(1, num):
             v = (v_prof[i - 1] + v_prof[i]) / 2.0
             w = (w_prof[i - 1] + w_prof[i]) / 2.0
 
             # Phi
-            pose[2, i] = pose[2, i - 1] + dt * v / self.__wheel_base * math.tan(w)
-            phi = (pose[2, i] + pose[2, i-1]) / 2.0
+            pose[2, i] = pi_2_npi(pose[2, i - 1] + dt * v * math.tan(w) / self.__wheel_base)
+            #phi = (pose[2, i] + pose[2, i-1]) / 2.0
+            #phi = pi_2_npi(phi)
+            phi = pose[2, i]
 
             # x, y
             pose[0, i] = pose[0, i - 1] + dt * v * math.cos(phi) 
-            pose[1, i] = pose[1, i - 1] - dt * v * math.sin(phi)
+            pose[1, i] = pose[1, i - 1] + dt * v * math.sin(phi)
 
         return pose            
 
