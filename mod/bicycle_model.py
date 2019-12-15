@@ -98,7 +98,7 @@ class BicycleModelTrajGenerator:
         v_prof = PolynomialCalculator(v_coeffs).calc(t_vec)
         w_prof = PolynomialCalculator(w_coeffs).calc(t_vec)
         
-        print(w_prof / math.pi * 180)
+        #print(w_prof / math.pi * 180)
 
         states_prof = self.compute_pose_prof(x_0, v_prof, w_prof, t_vec, dt)
         

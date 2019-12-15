@@ -29,9 +29,9 @@ if __name__ == "__main__":
     t_end = 1
     dt = 0.01
     x_init = np.array([0, 0, 0, 0, 0])
-    x_final = np.array([7, 5, -math.pi / 6, 0, 0])
-    init_v_coeffs = np.zeros(7)
-    init_w_coeffs = np.zeros(7)
+    x_final = np.array([7, 5, 0, 0, 0])
+    init_v_coeffs = np.zeros(3)
+    init_w_coeffs = np.zeros(3)
     params = np.append(init_v_coeffs, init_w_coeffs)
 
     b_traj = BicycleModelTrajGenerator(wheel_base)
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     pose.scatter(x_init[0], x_init[1], s=100, marker="o")
     pose.scatter(x_final[0], x_final[1], s=100, marker="o")    
 
-    for i in range(8):
+    for i in range(6):
 
         v_coeffs = params[0: init_v_coeffs.shape[0]]
         w_coeffs = params[init_v_coeffs.shape[0]: params.shape[0]]
@@ -83,8 +83,8 @@ if __name__ == "__main__":
     # Plot Final Result
     pose.plot(x_tf[0,:], x_tf[1,:], label="Final Result")
     vel.plot(np.arange(t_st, t_end + dt, dt), x_tf[3,:])
-    #angle.plot(np.arange(t_st, t_end + dt, dt), x_tf[4, :])
-    angle.plot(np.arange(t_st, t_end + dt, dt), x_tf[2, :])
+    angle.plot(np.arange(t_st, t_end + dt, dt), x_tf[4, :])
+    #angle.plot(np.arange(t_st, t_end + dt, dt), x_tf[2, :])
 
     print("Error  : " + str(np.append(x_init, x_final, axis=0) 
         - np.append(x_tf[:,0], x_tf[:,-1], axis=0)))
